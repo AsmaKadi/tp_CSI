@@ -19,40 +19,48 @@ def encrypt_rail_fence(plaintext, k):
     ciphertext = ''.join(''.join(rail[i]) for i in range(k))
     return ciphertext
 
-# Fonction de déchiffrement Rail Fence
+# Fonction de déchiffrement Rail Fence corrigée
 def decrypt_rail_fence(ciphertext, k):
     rail = [['' for _ in range(len(ciphertext))] for _ in range(k)]
-    direction_down = False
+    direction_down = None
     row, col = 0, 0
 
+    # Marquer les positions des caractères dans les rails
     for i in range(len(ciphertext)):
         rail[row][col] = '*'
         col += 1
 
-        if row == 0 or row == k - 1:
-            direction_down = not direction_down
+        if row == 0:
+            direction_down = True
+        elif row == k - 1:
+            direction_down = False
 
         row += 1 if direction_down else -1
 
+    # Remplir les rails avec les caractères du texte chiffré
     idx = 0
     for i in range(k):
         for j in range(len(ciphertext)):
-            if rail[i][j] == '*':
+            if rail[i][j] == '*' and idx < len(ciphertext):
                 rail[i][j] = ciphertext[idx]
                 idx += 1
 
+    # Reconstituer le texte clair en suivant le chemin du rail
     plaintext = []
     row, col = 0, 0
     for i in range(len(ciphertext)):
         plaintext.append(rail[row][col])
         col += 1
 
-        if row == 0 or row == k - 1:
-            direction_down = not direction_down
+        if row == 0:
+            direction_down = True
+        elif row == k - 1:
+            direction_down = False
 
         row += 1 if direction_down else -1
 
     return ''.join(plaintext)
+
 
 # Interface Streamlit
 st.title("Chiffrement et Déchiffrement Rail Fence")
